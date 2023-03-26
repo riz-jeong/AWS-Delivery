@@ -21,3 +21,89 @@ ec2에서 배포파일 실행
 
 배포파일 작성이 목표
 
+1. 환경변수
+```bash
+echo $HOME
+export HELLO="Hello, World!"
+echo $HELLO
+```
+
+export
+환경 변수를 저장할때 사용, 터미널 종료시 사라짐
+
+2. bashrc
+vi ./.bashrc
+```bash
+export HELLO="Hello, World!"
+```
+/.bashrc -> 로그인시 적용
+source ./.bashrc 명령어 -> 강제 적용
+
+
+vi var.sh
+```bash
+#!/bin/bash -> bash 문법 스크립트 작성하겠다
+
+GITHUB_ID="codingspecialist"
+PROJECT_NAME="aws-v2"
+PROJECT_VERSION="0.0.1"
+PROJECT_PID=""
+JAR_PATH=""
+
+export GITHUB_ID
+export PROJECT_NAME
+export PROJECT_VERSION
+export PROJECT_PID
+export JAR_PATH
+```
+
+source ./var.sh
+
+vi deploy.sh
+```bash
+#!/bin/bash
+
+source ./var.sh
+
+echo $GITHUB_ID
+```
+스크립트가 동작하는동안만 var.sh에 등록된 변수 사용
+
+3. 환경변수 적용 범위
+.bashrc 어디서나 사용가능
+터미널 만들고 source 적용 - 터미널이 꺼지기 직전까지 사용가능
+쉘 스크립트(파일)로 변수를 만들고 다른 파일에서 실행하기 위해서는
+- .bashrc등록되어 있던지(광역적으로 설정)
+- source로 터미널에서 적용되어 있던지(터미널이 꺼지면 못씀)
+- deploy.sh 파일이 실행되는 동안에만 변수를 사용할 수 있으면 된다.
+스크립트 파일에 source라는 코드를 작성해주면 된다.
+
+```bash
+#!/bin/bash
+
+# 1. env variable
+source ./var.sh
+
+echo "1. env variable setting complete"
+
+# 2. cron delete
+touch crontab_delete
+crotab crontab_delete
+rm crontab_delete
+echo "2. cron delete complete"
+```
+
+cron 제거 이유
+cron
+1. 종료시 (PID가 없음)
+2. 서버 재시작
+-> 1분마다 감시
+
+재배포시
+1. 프로젝트 종료
+2. 깃허브 다운
+3. jar빌드
+4. 실행
+5. 크론 등록
+과정에서 서버가 종료되고 시간이 걸림
+도중에 크론이 작동이 되면 문제가 발생
