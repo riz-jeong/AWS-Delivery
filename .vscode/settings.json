@@ -14,5 +14,6 @@
             "username": "metacoding",
             "password": "metacoding1234"
         }
-    ]
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive"
 }
